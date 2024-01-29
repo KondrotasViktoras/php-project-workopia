@@ -33,8 +33,12 @@
                 >Local</span 
               >-->
             </li>
-            <li class="mb-2">
-              <strong>Tags:</strong> <?= $listing->tags ?>
+            <?php if (!empty($listing->tags)) : ?>
+                <li class="mb-2">
+                  <strong>Tags:</strong> <span><?= $listing->tags ?></span>,
+                  
+                </li>
+                <?php endif; ?>
           </ul>
         </div>
       </div>
