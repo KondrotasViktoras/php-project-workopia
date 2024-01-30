@@ -57,7 +57,7 @@ class Router {
      * @param string $controller
      * @return void
      */
-    public function update($uri, $controller) {
+    public function put($uri, $controller) {
         $this->registerRoute('PUT', $uri, $controller);
     }
 
