@@ -123,6 +123,8 @@ class ListingController {
 
             $this->db->query($query, $newListingData);
 
+            Session::setFlashMessage('success_message', 'Listing created successfully');
+
             redirect('/listings');
         }
     }
@@ -151,15 +153,14 @@ class ListingController {
 
         //Authorization
         if(!Authorization::isOwner($listing->user_id)) {
-            $_SESSION['error_message'] = 'You are not authorized to delete this listing';
+            Session::setFlashMessage('error_message', 'You are not authorized to delete this listing');
             return redirect('/listings/' . $listing->id);
         }
 
         $this->db->query('DELETE FROM listings WHERE id = :id', $params);
 
         //Set flash message
-        $_SESSION['success_message'] = 'Listing deleted successfully';
-
+        Session::setFlashMessage('success_message', 'Listing deleted successfully');
         redirect('/listings');
     }
     /**
@@ -170,6 +171,7 @@ class ListingController {
  */
 
  public function edit($params) {
+    
     $id = $params['id'] ?? '';
 
     $params = [
@@ -184,7 +186,11 @@ class ListingController {
         ErrorController::notFound('Listing not found');
         return;
     }
-
+    //Authorization
+    if(!Authorization::isOwner($listing->user_id)) {
+        Session::setFlashMessage('error_message', 'You are not authorized to update this listing');
+        return redirect('/listings/' . $listing->id);
+    }
     loadView('listings/edit', [
         'listing' => $listing
     ]);
@@ -215,6 +221,12 @@ class ListingController {
     $updateValues = [];
 
     $updateValues = array_intersect_key($_POST, array_flip($allowedfields));
+
+     //Authorization
+     if(!Authorization::isOwner($listing->user_id)) {
+        Session::setFlashMessage('error_message', 'You are not authorized to update this listing');
+        return redirect('/listings/' . $listing->id);
+    }
 
     $updateValues = array_map('sanitize', $updateValues);
 
@@ -249,7 +261,8 @@ class ListingController {
 
             $this->db->query($updateQuery, $updateValues);
 
-            $_SESSION['success_message'] = 'Listing Updated';
+            //Set flash message
+            Session::setFlashMessage('success_message', 'Listing updated');
 
             redirect('/listings/' . $id);
         }
